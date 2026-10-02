@@ -41,6 +41,7 @@ class MultiTenantIntegrationTest {
         registry.add("spring.datasource.password", POSTGRES::getPassword);
         // Force small connection pool for TC-ISO-13
         registry.add("spring.datasource.hikari.maximum-pool-size", () -> 2);
+        registry.add("internal.api.token", () -> "test-service-token-123");
     }
 
     @Autowired
@@ -62,20 +63,16 @@ class MultiTenantIntegrationTest {
 
     @BeforeAll
     void provisionTenantsAndLogin() {
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.set("X-Service-Token", "test-service-token-123");
+        
         ResponseEntity<String> provA = rest.postForEntity(
-                "/api/tenants/alpha/provision", null, String.class);
+                "/internal/tenants/tenant_alpha/provision", new org.springframework.http.HttpEntity<>(null, headers), String.class);
         assertThat(provA.getStatusCode()).isEqualTo(OK);
 
         ResponseEntity<String> provB = rest.postForEntity(
-                "/api/tenants/beta/provision", null, String.class);
+                "/internal/tenants/tenant_beta/provision", new org.springframework.http.HttpEntity<>(null, headers), String.class);
         assertThat(provB.getStatusCode()).isEqualTo(OK);
-
-        // TODO: thay bằng provisioning thật ở Phase 1b
-        org.springframework.jdbc.core.JdbcTemplate jdbc = new org.springframework.jdbc.core.JdbcTemplate(
-            new org.springframework.jdbc.datasource.SingleConnectionDataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword(), true)
-        );
-        jdbc.update("INSERT INTO public.tenant_registry (id, tenant_id, schema_name, is_active) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING", java.util.UUID.randomUUID(), "tenant_alpha", "tenant_alpha", true);
-        jdbc.update("INSERT INTO public.tenant_registry (id, tenant_id, schema_name, is_active) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING", java.util.UUID.randomUUID(), "tenant_beta", "tenant_beta", true);
 
         tokenAlpha = "tenant_alpha";
         tokenBeta  = "tenant_beta";
@@ -135,10 +132,23 @@ class MultiTenantIntegrationTest {
 
     @Test
     @DisplayName("TC-ISO-10 [V3] Provisioning requires authentication")
-    @Disabled("Phase 1b - sẽ viết lại cho /internal + service token")
     void tc_iso_10_provisioning_requires_authentication() {
-        ResponseEntity<String> resp = rest.postForEntity("/api/tenants/unauthenticated_attempt/provision", null, String.class);
-        assertThat(resp.getStatusCode()).isEqualTo(UNAUTHORIZED);
+        // 1. Missing token -> 403
+        ResponseEntity<String> r1 = rest.postForEntity("/internal/tenants/new_tenant/provision", null, String.class);
+        assertThat(r1.getStatusCode()).isEqualTo(FORBIDDEN);
+        
+        // 2. Invalid token -> 403
+        org.springframework.http.HttpHeaders headersInvalid = new org.springframework.http.HttpHeaders();
+        headersInvalid.set("X-Service-Token", "wrong-token");
+        ResponseEntity<String> r2 = rest.postForEntity("/internal/tenants/new_tenant/provision", new org.springframework.http.HttpEntity<>(null, headersInvalid), String.class);
+        assertThat(r2.getStatusCode()).isEqualTo(FORBIDDEN);
+        
+        // 3. Valid token -> 200 (Success)
+        org.springframework.http.HttpHeaders headersValid = new org.springframework.http.HttpHeaders();
+        headersValid.set("X-Service-Token", "test-service-token-123");
+        ResponseEntity<String> r3 = rest.postForEntity("/internal/tenants/new_tenant/provision", new org.springframework.http.HttpEntity<>(null, headersValid), String.class);
+        assertThat(r3.getStatusCode()).isEqualTo(OK);
+        assertThat(r3.getBody()).contains("Provisioned schema");
     }
 
     @Test
@@ -172,7 +182,9 @@ class MultiTenantIntegrationTest {
     @DisplayName("TC-ISO-05 [ENABLED] [V4] SQL injection in schema name is rejected by validator")
     void tc_iso_05_schema_injection_is_rejected() {
         String injectionPayload = "alpha\" DROP SCHEMA tenant_alpha --";
-        ResponseEntity<String> resp = rest.postForEntity("/api/tenants/{tid}/provision", null, String.class, injectionPayload);
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.set("X-Service-Token", "test-service-token-123");
+        ResponseEntity<String> resp = rest.postForEntity("/internal/tenants/{tid}/provision", new org.springframework.http.HttpEntity<>(null, headers), String.class, injectionPayload);
         assertThat(resp.getStatusCode()).isEqualTo(BAD_REQUEST);
         assertThat(resp.getBody()).contains("Schema name không hợp lệ");
         
@@ -202,7 +214,9 @@ class MultiTenantIntegrationTest {
     @Test
     @DisplayName("TC-ISO-14 [NEW] Deactivated tenant rejected (403) and cache eviction test")
     void tc_iso_14_deactivated_tenant_is_fully_blocked() {
-        rest.postForEntity("/api/tenants/gamma/provision", null, String.class);
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.set("X-Service-Token", "test-service-token-123");
+        rest.postForEntity("/internal/tenants/gamma/provision", new org.springframework.http.HttpEntity<>(null, headers), String.class);
         org.springframework.jdbc.core.JdbcTemplate jdbc = new org.springframework.jdbc.core.JdbcTemplate(
             new org.springframework.jdbc.datasource.SingleConnectionDataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword(), true)
         );

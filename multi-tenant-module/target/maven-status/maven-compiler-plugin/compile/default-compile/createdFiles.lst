@@ -1,6 +1,7 @@
 vn/crm/multitenant/config/TenantConnectionProvider.class
 vn/crm/multitenant/service/AttributeValidationService.class
 vn/crm/multitenant/controller/ContactController.class
+vn/crm/multitenant/security/InternalApiAuthFilter.class
 vn/crm/multitenant/entity/Quote.class
 vn/crm/multitenant/entity/Lead.class
 vn/crm/multitenant/repository/RuleExecutionLogRepository.class

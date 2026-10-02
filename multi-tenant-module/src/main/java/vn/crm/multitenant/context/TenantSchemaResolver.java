@@ -35,7 +35,7 @@ public class TenantSchemaResolver {
 
     private String fetchFromDb(String tenantId) {
         List<String> results = jdbcTemplate.query(
-            "SELECT schema_name FROM public.tenant_registry WHERE tenant_id = ? AND is_active = true",
+            "SELECT schema_name FROM public.tenant_registry WHERE tenant_id = ? AND status = 'ACTIVE' AND is_active = true",
             (rs, rowNum) -> rs.getString("schema_name"),
             tenantId
         );

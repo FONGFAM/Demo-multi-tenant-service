@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final TenantContextFilter tenantContextFilter;
+    private final InternalApiAuthFilter internalApiAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -25,7 +26,8 @@ public class SecurityConfig {
                 .anyRequest().permitAll() // PermitAll since we handle auth/tenant in our custom filter for now
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(tenantContextFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(internalApiAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(tenantContextFilter, InternalApiAuthFilter.class);
 
         return http.build();
     }

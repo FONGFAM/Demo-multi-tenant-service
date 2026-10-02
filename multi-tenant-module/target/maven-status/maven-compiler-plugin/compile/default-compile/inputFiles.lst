@@ -34,6 +34,7 @@
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/entity/NotificationRule.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/controller/LeadController.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/entity/BaseEntity.java
+/Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/security/InternalApiAuthFilter.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/repository/OpportunityRepository.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/validation/SqlFormulaValidator.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/repository/TicketRepository.java
