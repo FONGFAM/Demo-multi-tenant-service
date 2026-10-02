@@ -1,0 +1,35 @@
+graph TB
+    subgraph "Java Spring Boot Application"
+        Filter[TenantContextFilter
+(Extracts JWT)]
+        
+        subgraph "Services"
+            MetaSvc[Metadata Service]
+            Validation[Validation Engine]
+            RecordSvc[Data Record Service]
+            RuleEngine[Dynamic Rule Engine
+(@Scheduled)]
+        end
+        
+        subgraph "Data Access Layer"
+            Interceptor[Hibernate Interceptor
+(CurrentTenantResolver)]
+            Hikari[HikariCP Connection Pool]
+        end
+        
+        Cache[(Caffeine Cache)]
+    end
+    
+    DB[(PostgreSQL)]
+    
+    Filter --> MetaSvc
+    Filter --> RecordSvc
+    RecordSvc --> Validation
+    Validation <--> Cache
+    MetaSvc <--> Cache
+    
+    RecordSvc --> Interceptor
+    RuleEngine --> Interceptor
+    
+    Interceptor --> Hikari
+    Hikari -->|SET SCHEMA 'tenant_id'| DB\n

@@ -1,0 +1,18 @@
+stateDiagram-v2
+    [*] --> DRAFT : Admin tạo mới
+    
+    DRAFT --> ACTIVE : Phê duyệt & Kích hoạt
+    DRAFT --> RETIRED : Hủy bỏ
+    
+    ACTIVE --> DEPRECATED : Có kế hoạch loại bỏ
+    ACTIVE --> ACTIVE : Cập nhật (Chỉ sửa tên/rule, không đổi type)
+    
+    DEPRECATED --> RETIRED : Loại bỏ hoàn toàn
+    DEPRECATED --> ACTIVE : Phục hồi
+    
+    RETIRED --> [*]
+    
+    note right of ACTIVE: Validation Engine
+bắt đầu áp dụng luật
+    note right of RETIRED: UI ẩn đi, Validation bỏ qua,
+Dữ liệu cũ thành Orphaned JSONB\n

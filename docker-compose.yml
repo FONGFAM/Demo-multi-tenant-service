@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres-crm:
+    image: postgres:15
+    container_name: postgres-crm
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crm_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-crm:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  crm-backend:
+    build: 
+      context: ./multi-tenant-module
+      dockerfile: Dockerfile
+    container_name: crm-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-crm:5432/crm_db
+    depends_on:
+      - postgres-crm
+    restart: unless-stopped
+
+volumes:
+  pgdata-crm:
+

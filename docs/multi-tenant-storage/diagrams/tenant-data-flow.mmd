@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant UI as Frontend
+    participant Filter as JWT Filter
+    participant Val as Validation Engine
+    participant Cache as Caffeine Cache
+    participant DB as PostgreSQL
+    
+    UI->>Filter: POST /api/v1/records (JWT: tenant=acme)
+    Filter->>Filter: Extract 'acme' -> ThreadLocal
+    Filter->>Val: Pass Payload
+    
+    Val->>Cache: Get Metadata for 'acme'
+    alt Cache Miss
+        Cache->>DB: SELECT * FROM acme.attribute_definition
+        DB-->>Cache: Return Rules
+    end
+    Cache-->>Val: Rules (nhom_mau: required, string)
+    
+    Val->>Val: Validate JSON Payload
+    alt Invalid
+        Val-->>UI: 400 Bad Request
+    else Valid
+        Val->>DB: Hibernate GET Connection
+        DB->>DB: SET SCHEMA 'acme'
+        Val->>DB: INSERT INTO customers (custom_properties)
+        DB-->>UI: 200 OK
+    end\n

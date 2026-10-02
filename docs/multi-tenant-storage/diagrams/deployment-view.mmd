@@ -1,0 +1,14 @@
+graph TD
+    subgraph "Oracle Cloud Free Tier"
+        subgraph "Application Server (VM)"
+            App[Multi-Tenant Module
+(Spring Boot .jar)]
+        end
+        
+        subgraph "Database Server (VM / Managed DB)"
+            DB[(PostgreSQL 15+)]
+        end
+    end
+    
+    Gateway[API Gateway] -->|HTTP/REST| App
+    App -->|JDBC / Connection Pool| DB\n

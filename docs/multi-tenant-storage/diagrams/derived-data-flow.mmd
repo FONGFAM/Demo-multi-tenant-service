@@ -1,0 +1,23 @@
+graph TD
+    subgraph "Dynamic Rule Engine"
+        Rules[(notification_rules
+Metadata)]
+        Job[Spring @Scheduled Job
+(2:00 AM)]
+    end
+    
+    subgraph "Database (Tenant Schema)"
+        Data[(Tenant Data
+Common + JSONB)]
+    end
+    
+    subgraph "External/Event"
+        Event[Spring ApplicationEvent]
+        Email[Email/Notification Service]
+    end
+    
+    Rules -->|1. Load Condition SQL| Job
+    Job -->|2. Execute On-the-fly SQL| Data
+    Data -->|3. Return Matched Records| Job
+    Job -->|4. Publish Event| Event
+    Event -->|5. Async Trigger| Email\n

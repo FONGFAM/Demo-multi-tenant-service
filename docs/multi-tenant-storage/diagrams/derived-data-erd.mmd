@@ -1,0 +1,35 @@
+erDiagram
+    %% Derived Data & Rule Engine ERD
+    
+    CUSTOMERS {
+        uuid id PK
+    }
+    OPPORTUNITIES {
+        uuid id PK
+    }
+
+    NOTIFICATION_RULES {
+        uuid id PK
+        varchar target_table "Áp dụng cho bảng nào"
+        varchar rule_type "AGGREGATION (Báo cáo), ALERT (Cảnh báo)"
+        varchar rule_name
+        text sql_formula "Công thức/Rule thực thi SQL"
+        varchar status "ACTIVE, PAUSED"
+        varchar trigger_cron "VD: 0 0 2 * * ? (Dành cho Alerts)"
+    }
+    
+    RULE_EXECUTION_LOGS {
+        uuid id PK
+        uuid rule_id FK
+        timestamp executed_at
+        int execution_ms "Thời gian chạy"
+        int affected_rows "Số bản ghi bị tác động"
+        varchar status "SUCCESS, FAILED"
+        text error_msg
+    }
+    
+    NOTIFICATION_RULES ||--o{ RULE_EXECUTION_LOGS : "logs executions"
+    NOTIFICATION_RULES |o--o{ CUSTOMERS : "computes over (Logic)"
+    NOTIFICATION_RULES |o--o{ OPPORTUNITIES : "computes over (Logic)"
+    
+    note for NOTIFICATION_RULES "Không lưu kết quả vật lý cho từng Bảng.\nKết quả Alert bắn qua Event.\nKết quả Aggregation lưu trên RAM Cache."

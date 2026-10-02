@@ -1,0 +1,55 @@
+erDiagram
+    %% Core CRM Data Model - 7 Bảng Nghiệp Vụ Chuẩn
+    
+    LEADS {
+        uuid id PK
+        varchar full_name
+        jsonb custom_properties
+    }
+    ACCOUNTS {
+        uuid id PK
+        varchar account_name
+        jsonb custom_properties
+    }
+    CONTACTS {
+        uuid id PK
+        uuid account_id FK
+        varchar first_name
+        jsonb custom_properties
+    }
+    OPPORTUNITIES {
+        uuid id PK
+        uuid account_id FK
+        uuid contact_id FK
+        decimal amount
+        jsonb custom_properties
+    }
+    TICKETS {
+        uuid id PK
+        uuid account_id FK
+        uuid contact_id FK
+        varchar subject
+        jsonb custom_properties
+    }
+    ACTIVITIES {
+        uuid id PK
+        varchar target_entity "Đa hình: leads, contacts, opps"
+        uuid target_id
+        varchar activity_type
+        jsonb custom_properties
+    }
+    NOTES {
+        uuid id PK
+        varchar target_entity "Đa hình"
+        uuid target_id
+        text content
+        jsonb custom_properties
+    }
+
+    ACCOUNTS ||--o{ CONTACTS : "has"
+    ACCOUNTS ||--o{ OPPORTUNITIES : "has"
+    CONTACTS ||--o{ OPPORTUNITIES : "involved in"
+    ACCOUNTS ||--o{ TICKETS : "raises"
+    CONTACTS ||--o{ TICKETS : "raises"
+    
+    note for ACTIVITIES "Các trường id, created_at, owner_id...\nđược ẩn đi để sơ đồ gọn gàng."\n

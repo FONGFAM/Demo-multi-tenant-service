@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant UI as Frontend Dashboard
+    participant API as Java API Layer
+    participant Cache as Caffeine Cache (TTL 15s)
+    participant Rule as Rule Engine
+    participant DB as PostgreSQL
+    
+    UI->>API: GET /api/v1/dashboard/revenue
+    API->>Rule: Extract Rule for 'revenue'
+    Rule->>Cache: Check Cached Result
+    
+    alt Cache Miss
+        Cache->>DB: Execute Query (Covering Index)
+        DB-->>Cache: Result Data
+    end
+    
+    Cache-->>API: Return Result
+    API-->>UI: 200 OK (Chart Data)\n

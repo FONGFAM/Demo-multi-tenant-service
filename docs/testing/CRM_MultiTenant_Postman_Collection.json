@@ -1,0 +1,243 @@
+{
+	"info": {
+		"_postman_id": "7642646d-c40d-4959-99e7-f13885d5622a",
+		"name": "CRM Multi-Tenant Storage Engine",
+		"description": "Collection để test Data Isolation và JSONB của Multi-Tenant Architecture",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Khởi tạo (Provisioning)",
+			"item": [
+				{
+					"name": "1.1. Khởi tạo Tenant A",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/tenants/test_a/provision",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"tenants",
+								"test_a",
+								"provision"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2. Khởi tạo Tenant B",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/tenants/test_b/provision",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"tenants",
+								"test_b",
+								"provision"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Ghi Dữ Liệu (Create Lead)",
+			"item": [
+				{
+					"name": "2.1. Tạo Lead cho Tenant A",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Tenant-ID",
+								"value": "tenant_test_a",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"Nguyen Van A\",\n    \"email\": \"a@example.com\",\n    \"phone\": \"0123456789\",\n    \"source\": \"Web\",\n    \"status\": \"NEW\",\n    \"customProperties\": {\n        \"zalo_id\": \"zalo123\",\n        \"age\": 30\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/leads",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"leads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2. Tạo Lead cho Tenant B",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Tenant-ID",
+								"value": "tenant_test_b",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"Tran Van B\",\n    \"email\": \"b@example.com\",\n    \"phone\": \"0987654321\",\n    \"source\": \"Facebook\",\n    \"status\": \"CONTACTED\",\n    \"customProperties\": {\n        \"facebook_url\": \"fb.com/b\",\n        \"zalo_id\": \"zalo_b\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/leads",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"leads"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Đọc Dữ Liệu (Get & Search)",
+			"item": [
+				{
+					"name": "3.1. Xem danh sách Lead (Tenant A)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant-ID",
+								"value": "tenant_test_a",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/leads",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"leads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2. Xem danh sách Lead (Tenant B)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant-ID",
+								"value": "tenant_test_b",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/leads",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"leads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.3. Tìm kiếm theo Zalo (Tenant A)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant-ID",
+								"value": "tenant_test_a",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/leads/search?key=zalo_id&value=zalo123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"leads",
+								"search"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "zalo_id"
+								},
+								{
+									"key": "value",
+									"value": "zalo123"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

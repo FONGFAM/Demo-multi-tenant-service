@@ -1,0 +1,28 @@
+erDiagram
+    %% Metadata & Custom Attributes ERD
+    
+    CUSTOMERS {
+        uuid id PK
+        jsonb custom_properties "Value data"
+    }
+
+    ATTRIBUTE_DEFINITIONS {
+        uuid id PK
+        varchar(50) target_table "Map với customers, leads..."
+        varchar(50) field_key "Map với key trong JSONB"
+        varchar(20) field_type "STRING, DATE, NUMBER"
+        boolean is_required
+        varchar(20) status "ACTIVE, DEPRECATED, RETIRED"
+        int version
+    }
+    
+    ATTRIBUTE_HISTORY_LOGS {
+        uuid id PK
+        uuid attribute_id FK
+        timestamp changed_at
+        jsonb old_state
+        jsonb new_state
+    }
+    
+    ATTRIBUTE_DEFINITIONS ||--o{ ATTRIBUTE_HISTORY_LOGS : "has history"
+    ATTRIBUTE_DEFINITIONS |o--o{ CUSTOMERS : "validates (Logic)"

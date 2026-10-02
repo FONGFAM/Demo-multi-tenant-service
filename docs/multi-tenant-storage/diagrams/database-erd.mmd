@@ -1,0 +1,29 @@
+erDiagram
+    %% Biểu diễn cấu trúc bên trong 1 Schema của Tenant
+    
+    ATTRIBUTE_DEFINITION {
+        uuid id PK
+        varchar target_table "Ví dụ: 'customers', 'leads'"
+        varchar field_key "Ví dụ: 'nhom_mau'"
+        varchar field_type "STRING, NUMBER, DATE"
+        boolean is_required
+        boolean is_active
+    }
+    
+    NOTIFICATION_RULES {
+        uuid id PK
+        varchar rule_type "DASHBOARD, ALERT"
+        varchar rule_name
+        text sql_query "Lệnh SQL động"
+    }
+    
+    CUSTOMERS {
+        uuid id PK
+        varchar name "Common Data"
+        varchar email "Common Data"
+        jsonb custom_properties "Custom Data (Dựa theo Metadata)"
+        timestamp created_at
+    }
+    
+    ATTRIBUTE_DEFINITION ||--o{ CUSTOMERS : "định nghĩa cấu trúc cho"
+    NOTIFICATION_RULES ||--o{ CUSTOMERS : "lùng sục dữ liệu từ"

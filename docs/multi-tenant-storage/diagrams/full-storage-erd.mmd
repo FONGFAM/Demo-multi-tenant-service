@@ -1,0 +1,45 @@
+erDiagram
+    %% Full Storage ERD: 10 Bảng (7 Lõi + 3 Engine)
+    
+    TENANT_REGISTRY {
+        uuid id PK
+        varchar schema_name
+    }
+
+    LEADS { uuid id PK }
+    ACCOUNTS { uuid id PK }
+    CONTACTS { uuid id PK }
+    OPPORTUNITIES { uuid id PK }
+    TICKETS { uuid id PK }
+    ACTIVITIES { uuid id PK }
+    NOTES { uuid id PK }
+
+    ATTRIBUTE_DEFINITIONS {
+        uuid id PK
+        varchar target_table "VD: 'contacts'"
+        varchar field_key
+        varchar field_type
+    }
+    
+    NOTIFICATION_RULES {
+        uuid id PK
+        varchar target_table
+        varchar rule_type
+        text sql_formula
+    }
+    
+    RULE_EXECUTION_LOGS {
+        uuid id PK
+        uuid rule_id FK
+    }
+
+    ATTRIBUTE_DEFINITIONS |o--o{ ACCOUNTS : "validates"
+    ATTRIBUTE_DEFINITIONS |o--o{ CONTACTS : "validates"
+    ATTRIBUTE_DEFINITIONS |o--o{ OPPORTUNITIES : "validates"
+    
+    NOTIFICATION_RULES ||--o{ RULE_EXECUTION_LOGS : "tracks"
+    NOTIFICATION_RULES |o--o{ CONTACTS : "computes over"
+    NOTIFICATION_RULES |o--o{ OPPORTUNITIES : "computes over"
+    
+    ACCOUNTS ||--o{ CONTACTS : "has"
+    ACCOUNTS ||--o{ OPPORTUNITIES : "has"\n

@@ -1,0 +1,21 @@
+graph TD
+    User([End User / UI])
+    Admin([System Admin])
+    
+    subgraph "Core CRM Ecosystem"
+        Gateway[API Gateway]
+        CoreServices[Core CRM Services
+(Tenant Management)]
+    end
+    
+    subgraph "Multi-Tenant Storage Module"
+        Module[Flexible Data Engine]
+        DB[(PostgreSQL 15+)]
+    end
+    
+    User -->|JWT Token| Gateway
+    Admin -->|JWT Token| Gateway
+    Gateway -->|Forward Request
++ JWT| Module
+    CoreServices -->|Tenant Created Event| Module
+    Module -->|Dynamic SQL & JSONB| DB\n
