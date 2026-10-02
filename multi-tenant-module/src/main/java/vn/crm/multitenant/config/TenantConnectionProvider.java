@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import vn.crm.multitenant.validation.TenantSchemaValidator;
 
+import vn.crm.multitenant.context.TenantSchemaResolver;
+
 /**
  * Bắt lấy Connection từ Pool và SET SCHEMA cho Postgresql dựa trên Tenant ID.
  */
@@ -19,6 +21,7 @@ import vn.crm.multitenant.validation.TenantSchemaValidator;
 public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
     private final DataSource dataSource;
+    private final TenantSchemaResolver tenantSchemaResolver;
 
     @Override
     public Connection getAnyConnection() throws SQLException {
@@ -32,20 +35,27 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
     @Override
     public Connection getConnection(String tenantIdentifier) throws SQLException {
+        if ("UNKNOWN_TENANT_SENTINEL".equals(tenantIdentifier)) {
+            throw new org.hibernate.HibernateException("No tenant context available to acquire connection");
+        }
+
         // V4 FIX: validate schema name trước khi dùng trong SQL động
-        // Đây là last line of defense tại tầng Hibernate — ngăn SQL injection qua TenantContext
+        // Thay vì dùng tenantId trực tiếp, dùng Schema Name từ Registry
+        String schemaName;
         try {
-            TenantSchemaValidator.validate(tenantIdentifier);
+            schemaName = tenantSchemaResolver.resolveSchemaName(tenantIdentifier);
+            TenantSchemaValidator.validate(schemaName);
         } catch (IllegalArgumentException e) {
-            log.error("Schema name không hợp lệ, từ chối kết nối: '{}' — {}", tenantIdentifier, e.getMessage());
+            log.error("Lỗi xác định schema cho tenant: '{}' — {}", tenantIdentifier, e.getMessage());
             throw new SQLException("Invalid tenant schema: " + e.getMessage(), e);
         }
 
+
         final Connection connection = getAnyConnection();
         // Cốt lõi của kiến trúc Shared DB - Separate Schema
-        // Đổi schema về đúng tenant_id (VD: tenant_123)
+        // Đổi schema về đúng schemaName (VD: tenant_123_schema)
         try {
-            connection.createStatement().execute("SET SCHEMA '" + tenantIdentifier + "'");
+            connection.createStatement().execute("SET SCHEMA '" + schemaName + "'");
         } catch (SQLException e) {
             log.error("Lỗi khi set schema cho tenant {}: {}", tenantIdentifier, e.getMessage());
             throw e;

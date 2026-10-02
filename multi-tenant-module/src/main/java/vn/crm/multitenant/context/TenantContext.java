@@ -18,10 +18,17 @@ public class TenantContext {
 
     public static String getTenantId() {
         String tenantId = CURRENT_TENANT.get();
-        return (tenantId != null) ? tenantId : DEFAULT_TENANT_ID;
+        if (tenantId == null) {
+            throw new IllegalStateException("TenantContext is empty - no tenant bound to current thread");
+        }
+        return tenantId;
     }
 
     public static void clear() {
         CURRENT_TENANT.remove();
+    }
+
+    public static boolean isPresent() {
+        return CURRENT_TENANT.get() != null;
     }
 }

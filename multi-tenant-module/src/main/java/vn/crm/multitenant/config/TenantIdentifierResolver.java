@@ -14,7 +14,10 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
 
     @Override
     public String resolveCurrentTenantIdentifier() {
-        return TenantContext.getTenantId();
+        if (TenantContext.isPresent()) {
+            return TenantContext.getTenantId();
+        }
+        return "UNKNOWN_TENANT_SENTINEL";
     }
 
     @Override

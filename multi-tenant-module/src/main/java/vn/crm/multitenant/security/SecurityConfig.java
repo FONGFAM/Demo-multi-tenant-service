@@ -15,20 +15,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final TenantContextFilter tenantContextFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/api/tenants/**").permitAll() // allow provisioning for demo
-                .requestMatchers("/*.html").permitAll() // allow static html
-                .anyRequest().authenticated()
+                .anyRequest().permitAll() // PermitAll since we handle auth/tenant in our custom filter for now
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(tenantContextFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
