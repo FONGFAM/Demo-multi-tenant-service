@@ -1,14 +1,14 @@
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/validation/TenantSchemaValidator.java
+/Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/repository/CustomerRepository.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/repository/AccountRepository.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/controller/ContactController.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/controller/ActivityController.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/config/TenantConnectionProvider.java
-/Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/repository/LeadRepository.java
+/Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/controller/CustomerController.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/entity/AttributeDefinition.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/entity/Activity.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/MultiTenantModuleApplication.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/controller/QuoteController.java
-/Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/controller/LeadController.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/controller/TicketController.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/entity/BaseEntity.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/security/InternalApiAuthFilter.java
@@ -17,7 +17,7 @@
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/controller/AttributeDefinitionController.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/repository/OpportunityRepository.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/context/TenantContext.java
-/Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/entity/Lead.java
+/Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/entity/Customer.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/repository/ProductRepository.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/entity/Account.java
 /Users/macos/Document/Documents/project/Demo-multi-tenant-service/multi-tenant-module/src/main/java/vn/crm/multitenant/repository/TicketRepository.java

@@ -48,7 +48,7 @@ class MultiTenantIntegrationTest {
     private TestRestTemplate rest;
 
     @Autowired
-    private vn.crm.multitenant.repository.LeadRepository leadRepository;
+    private vn.crm.multitenant.repository.CustomerRepository customerRepository;
     @Autowired
     private vn.crm.multitenant.context.TenantSchemaResolver tenantSchemaResolver;
 
@@ -86,23 +86,23 @@ class MultiTenantIntegrationTest {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private ResponseEntity<Map> createLead(String tenantId, String fullName) {
+    private ResponseEntity<Map> createCustomer(String tenantId, String fullName) {
         String body = String.format("{\"fullName\":\"%s\",\"status\":\"NEW\"}", fullName.replace("\"", "\\\""));
-        return rest.exchange("/api/v1/leads", POST, new HttpEntity<>(body, withTenantHeader(tenantId)), Map.class);
+        return rest.exchange("/api/v1/customers", POST, new HttpEntity<>(body, withTenantHeader(tenantId)), Map.class);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private ResponseEntity<List> getLeads(String tenantId) {
-        return rest.exchange("/api/v1/leads", GET, new HttpEntity<>(withTenantHeader(tenantId)), List.class);
+    private ResponseEntity<List> getCustomers(String tenantId) {
+        return rest.exchange("/api/v1/customers", GET, new HttpEntity<>(withTenantHeader(tenantId)), List.class);
     }
 
     @Test
     @DisplayName("TC-ISO-01 [ENABLED] Alpha data must NOT be visible to Beta (core schema isolation)")
     void tc_iso_01_alpha_data_invisible_to_beta() {
-        String uniqueName = "ISOLATION-LEAD-" + UUID.randomUUID();
-        createLead(tokenAlpha, uniqueName);
-        ResponseEntity<List> betaLeads = getLeads(tokenBeta);
-        boolean found = Optional.ofNullable(betaLeads.getBody()).orElse(Collections.emptyList()).stream()
+        String uniqueName = "ISOLATION-CUSTOMER-" + UUID.randomUUID();
+        createCustomer(tokenAlpha, uniqueName);
+        ResponseEntity<List> betaCustomers = getCustomers(tokenBeta);
+        boolean found = Optional.ofNullable(betaCustomers.getBody()).orElse(Collections.emptyList()).stream()
                 .anyMatch(item -> uniqueName.equals(((Map<?, ?>) item).get("fullName")));
         assertThat(found).isFalse();
     }
@@ -111,9 +111,9 @@ class MultiTenantIntegrationTest {
     @DisplayName("TC-ISO-02 [ENABLED] Alpha can read its own data within its schema")
     void tc_iso_02_alpha_can_read_own_data() {
         String uniqueName = "ALPHA-OWN-" + UUID.randomUUID();
-        createLead(tokenAlpha, uniqueName);
-        ResponseEntity<List> alphaLeads = getLeads(tokenAlpha);
-        boolean found = Optional.ofNullable(alphaLeads.getBody()).orElse(Collections.emptyList()).stream()
+        createCustomer(tokenAlpha, uniqueName);
+        ResponseEntity<List> alphaCustomers = getCustomers(tokenAlpha);
+        boolean found = Optional.ofNullable(alphaCustomers.getBody()).orElse(Collections.emptyList()).stream()
                 .anyMatch(item -> uniqueName.equals(((Map<?, ?>) item).get("fullName")));
         assertThat(found).isTrue();
     }
@@ -121,10 +121,10 @@ class MultiTenantIntegrationTest {
     @Test
     @DisplayName("TC-ISO-12 [ENABLED] Alpha attribute definitions do NOT affect Beta validation")
     void tc_iso_12_attribute_definitions_scoped_per_tenant() {
-        String attrBody = "{\"entityType\":\"LEAD\",\"attributeKey\":\"alpha_only_required_field\",\"dataType\":\"STRING\",\"isRequired\":true}";
+        String attrBody = "{\"entityType\":\"CUSTOMER\",\"attributeKey\":\"alpha_only_required_field\",\"dataType\":\"STRING\",\"isRequired\":true}";
         rest.exchange("/api/v1/attributes", POST, new HttpEntity<>(attrBody, withTenantHeader(tokenAlpha)), Map.class);
-        ResponseEntity<Map> betaLead = createLead(tokenBeta, "Beta Lead Without Alpha Field");
-        assertThat(betaLead.getStatusCode()).isEqualTo(OK);
+        ResponseEntity<Map> betaCustomer = createCustomer(tokenBeta, "Beta Customer Without Alpha Field");
+        assertThat(betaCustomer.getStatusCode()).isEqualTo(OK);
     }
 
     @Test
@@ -151,27 +151,27 @@ class MultiTenantIntegrationTest {
     @Test
     @DisplayName("TC-ISO-11 [NEW] Missing or empty X-Tenant-ID header returns 400")
     void tc_iso_11_missing_tenant_header_returns_400() {
-        ResponseEntity<String> resp = rest.exchange("/api/v1/leads", GET, new HttpEntity<>(withTenantHeader(null)), String.class);
+        ResponseEntity<String> resp = rest.exchange("/api/v1/customers", GET, new HttpEntity<>(withTenantHeader(null)), String.class);
         assertThat(resp.getStatusCode()).isEqualTo(BAD_REQUEST);
         
-        ResponseEntity<String> resp2 = rest.exchange("/api/v1/leads", GET, new HttpEntity<>(withTenantHeader("")), String.class);
+        ResponseEntity<String> resp2 = rest.exchange("/api/v1/customers", GET, new HttpEntity<>(withTenantHeader("")), String.class);
         assertThat(resp2.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
 
     @Test
     @DisplayName("TC-ISO-03 [NEW] Non-existent tenant returns 403")
     void tc_iso_03_nonexistent_tenant_returns_403() {
-        ResponseEntity<String> resp = rest.exchange("/api/v1/leads", GET, new HttpEntity<>(withTenantHeader("not_a_tenant")), String.class);
+        ResponseEntity<String> resp = rest.exchange("/api/v1/customers", GET, new HttpEntity<>(withTenantHeader("not_a_tenant")), String.class);
         assertThat(resp.getStatusCode()).isEqualTo(FORBIDDEN);
     }
 
     @Test
     @DisplayName("TC-ISO-04 [NEW] System schema names (public, pg_catalog) return 403")
     void tc_iso_04_system_tenant_returns_403() {
-        ResponseEntity<String> resp = rest.exchange("/api/v1/leads", GET, new HttpEntity<>(withTenantHeader("public")), String.class);
+        ResponseEntity<String> resp = rest.exchange("/api/v1/customers", GET, new HttpEntity<>(withTenantHeader("public")), String.class);
         assertThat(resp.getStatusCode()).isEqualTo(FORBIDDEN);
         
-        ResponseEntity<String> resp2 = rest.exchange("/api/v1/leads", GET, new HttpEntity<>(withTenantHeader("pg_catalog")), String.class);
+        ResponseEntity<String> resp2 = rest.exchange("/api/v1/customers", GET, new HttpEntity<>(withTenantHeader("pg_catalog")), String.class);
         assertThat(resp2.getStatusCode()).isEqualTo(FORBIDDEN);
     }
 
@@ -205,7 +205,7 @@ class MultiTenantIntegrationTest {
         jdbc.update("INSERT INTO public.tenant_registry (id, tenant_id, schema_name, is_active) VALUES (?, ?, ?, ?) ON CONFLICT (tenant_id) DO UPDATE SET is_active = EXCLUDED.is_active", java.util.UUID.randomUUID(), "gamma", "tenant_gamma", true);
         
         // 1. Should be OK initially
-        ResponseEntity<String> resp1 = rest.exchange("/api/v1/leads", GET, new HttpEntity<>(withTenantHeader("gamma")), String.class);
+        ResponseEntity<String> resp1 = rest.exchange("/api/v1/customers", GET, new HttpEntity<>(withTenantHeader("gamma")), String.class);
         assertThat(resp1.getStatusCode()).isEqualTo(OK);
 
         // 2. Deactivate in DB
@@ -215,7 +215,7 @@ class MultiTenantIntegrationTest {
         tenantSchemaResolver.evict("gamma");
         
         // 4. Now it should be blocked (403)
-        ResponseEntity<String> resp2 = rest.exchange("/api/v1/leads", GET, new HttpEntity<>(withTenantHeader("gamma")), String.class);
+        ResponseEntity<String> resp2 = rest.exchange("/api/v1/customers", GET, new HttpEntity<>(withTenantHeader("gamma")), String.class);
         assertThat(resp2.getStatusCode()).isEqualTo(FORBIDDEN);
     }
 
@@ -229,8 +229,8 @@ class MultiTenantIntegrationTest {
         java.util.concurrent.atomic.AtomicBoolean hasLeak = new java.util.concurrent.atomic.AtomicBoolean(false);
         java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
 
-        createLead("tenant_alpha", "MARKER_ALPHA");
-        createLead("tenant_beta", "MARKER_BETA");
+        createCustomer("tenant_alpha", "MARKER_ALPHA");
+        createCustomer("tenant_beta", "MARKER_BETA");
 
         for (int i = 0; i < threads; i++) {
             boolean isAlpha = (i % 2 == 0);
@@ -241,11 +241,11 @@ class MultiTenantIntegrationTest {
                 try {
                     latch.await();
                     for (int j = 0; j < loops; j++) {
-                        ResponseEntity<List> leads = getLeads(tenantId);
-                        if (leads.getStatusCode() != OK) {
+                        ResponseEntity<List> customers = getCustomers(tenantId);
+                        if (customers.getStatusCode() != OK) {
                             hasLeak.set(true);
                         } else {
-                            boolean leak = Optional.ofNullable(leads.getBody()).orElse(Collections.emptyList()).stream()
+                            boolean leak = Optional.ofNullable(customers.getBody()).orElse(Collections.emptyList()).stream()
                                 .anyMatch(item -> wrongMarker.equals(((Map<?, ?>) item).get("fullName")));
                             if (leak) {
                                 hasLeak.set(true);
@@ -274,17 +274,17 @@ class MultiTenantIntegrationTest {
     @DisplayName("TC-ISO-16 [ENABLED] Cross-schema IDOR via Repository is prevented")
     void tc_iso_16_idor_via_repository() {
         vn.crm.multitenant.context.TenantContext.setTenantId("tenant_alpha");
-        vn.crm.multitenant.entity.Lead alphaLead = new vn.crm.multitenant.entity.Lead();
-        alphaLead.setFullName("Alpha Secret Lead");
-        alphaLead = leadRepository.save(alphaLead);
-        UUID alphaLeadId = alphaLead.getId();
+        vn.crm.multitenant.entity.Customer alphaCustomer = new vn.crm.multitenant.entity.Customer();
+        alphaCustomer.setFullName("Alpha Secret Customer");
+        alphaCustomer = customerRepository.save(alphaCustomer);
+        UUID alphaCustomerId = alphaCustomer.getId();
 
         // Positive check: Alpha can find it
-        Optional<vn.crm.multitenant.entity.Lead> alphaReadsAlpha = leadRepository.findById(alphaLeadId);
+        Optional<vn.crm.multitenant.entity.Customer> alphaReadsAlpha = customerRepository.findById(alphaCustomerId);
         assertThat(alphaReadsAlpha).isPresent();
 
         vn.crm.multitenant.context.TenantContext.setTenantId("tenant_beta");
-        Optional<vn.crm.multitenant.entity.Lead> betaReadsAlpha = leadRepository.findById(alphaLeadId);
+        Optional<vn.crm.multitenant.entity.Customer> betaReadsAlpha = customerRepository.findById(alphaCustomerId);
         
         assertThat(betaReadsAlpha).isEmpty();
     }
@@ -352,7 +352,7 @@ class MultiTenantIntegrationTest {
         vn.crm.multitenant.context.TenantContext.clear();
         
         Exception ex = assertThrows(Exception.class, () -> {
-            leadRepository.findAll();
+            customerRepository.findAll();
         });
         
         boolean found = false;

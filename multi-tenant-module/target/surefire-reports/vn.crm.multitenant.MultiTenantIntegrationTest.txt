@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: vn.crm.multitenant.MultiTenantIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.507 s - in vn.crm.multitenant.MultiTenantIntegrationTest
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.617 s - in vn.crm.multitenant.MultiTenantIntegrationTest

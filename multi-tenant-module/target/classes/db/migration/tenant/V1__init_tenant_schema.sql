@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS contacts (
     phone VARCHAR(50)
 );
 
-CREATE TABLE IF NOT EXISTS leads (
+CREATE TABLE IF NOT EXISTS customers (
     id UUID PRIMARY KEY,
     owner_id UUID, created_by UUID, updated_by UUID,
     created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS notes (
 );
 
 -- Tạo GIN Index cho JSONB để truy vấn siêu tốc trên TẤT CẢ các bảng
-CREATE INDEX idx_leads_custom_prop ON leads USING GIN (custom_properties);
+CREATE INDEX idx_customers_custom_prop ON customers USING GIN (custom_properties);
 CREATE INDEX idx_accounts_custom_prop ON accounts USING GIN (custom_properties);
 CREATE INDEX idx_contacts_custom_prop ON contacts USING GIN (custom_properties);
 CREATE INDEX idx_opps_custom_prop ON opportunities USING GIN (custom_properties);
