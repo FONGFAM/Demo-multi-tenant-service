@@ -7,14 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Bảng Leads (Khách hàng tiềm năng) - 1 trong 9 Bảng Cốt lõi của CRM.
+ * Bảng Customers (Khách hàng tiềm năng) - 1 trong 9 Bảng Cốt lõi của CRM.
  * Được kế thừa 7 trường mặc định từ BaseEntity.
  */
 @Entity
-@Table(name = "leads")
+@Table(name = "customers")
 @Getter
 @Setter
-public class Lead extends BaseEntity {
+public class Customer extends BaseEntity {
 
     @Column(name = "full_name", nullable = false)
     private String fullName;

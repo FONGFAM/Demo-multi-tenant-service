@@ -22,7 +22,7 @@ public class AttributeDefinition {
     private UUID id;
 
     @Column(name = "target_table", nullable = false)
-    private String entityType; // e.g., 'LEAD'
+    private String entityType; // e.g., 'CUSTOMER'
 
     @Column(name = "field_key", nullable = false)
     private String attributeKey; // e.g., 'zalo_id', 'membership_tier'
