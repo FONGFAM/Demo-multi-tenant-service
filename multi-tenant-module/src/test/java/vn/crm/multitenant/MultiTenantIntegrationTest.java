@@ -50,9 +50,6 @@ class MultiTenantIntegrationTest {
     @Autowired
     private vn.crm.multitenant.repository.LeadRepository leadRepository;
     @Autowired
-    private vn.crm.multitenant.service.RuleEngineService ruleEngineService;
-
-    @Autowired
     private vn.crm.multitenant.context.TenantSchemaResolver tenantSchemaResolver;
 
     @LocalServerPort
@@ -193,23 +190,7 @@ class MultiTenantIntegrationTest {
         org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> vn.crm.multitenant.validation.TenantSchemaValidator.validate("public"));
     }
 
-    @Test
-    @DisplayName("TC-ISO-06 [ENABLED] [V5] Cross-schema sql_formula rejected on save")
-    // NOTE: Sẽ xóa ở Phase 2 (Rule Engine cleanup)
-    void tc_iso_06_cross_schema_sql_formula_is_rejected() {
-        String maliciousRule = "{\"targetTable\":\"leads\",\"ruleType\":\"ALERT\",\"sqlFormula\":\"SELECT id FROM public.tenant_registry\"}";
-        ResponseEntity<String> resp = rest.exchange("/api/v1/notification_rules", POST, new HttpEntity<>(maliciousRule, withTenantHeader(tokenAlpha)), String.class);
-        assertThat(resp.getStatusCode()).isEqualTo(BAD_REQUEST);
-    }
 
-    @Test
-    @DisplayName("TC-ISO-07 [ENABLED] [V5] DML sql_formula rejected on save")
-    // NOTE: Sẽ xóa ở Phase 2 (Rule Engine cleanup)
-    void tc_iso_07_dml_sql_formula_is_rejected() {
-        String dmlRule = "{\"targetTable\":\"leads\",\"ruleType\":\"ALERT\",\"sqlFormula\":\"DELETE FROM leads WHERE 1=1\"}";
-        ResponseEntity<String> resp = rest.exchange("/api/v1/notification_rules", POST, new HttpEntity<>(dmlRule, withTenantHeader(tokenAlpha)), String.class);
-        assertThat(resp.getStatusCode()).isEqualTo(BAD_REQUEST);
-    }
 
     @Test
     @DisplayName("TC-ISO-14 [NEW] Deactivated tenant rejected (403) and cache eviction test")

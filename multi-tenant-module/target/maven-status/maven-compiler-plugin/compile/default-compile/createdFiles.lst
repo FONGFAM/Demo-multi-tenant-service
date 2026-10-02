@@ -4,10 +4,7 @@ vn/crm/multitenant/controller/ContactController.class
 vn/crm/multitenant/security/InternalApiAuthFilter.class
 vn/crm/multitenant/entity/Quote.class
 vn/crm/multitenant/entity/Lead.class
-vn/crm/multitenant/repository/RuleExecutionLogRepository.class
 vn/crm/multitenant/entity/Product.class
-vn/crm/multitenant/controller/RuleExecutionLogController.class
-vn/crm/multitenant/service/RuleEngineService.class
 vn/crm/multitenant/repository/AccountRepository.class
 vn/crm/multitenant/entity/AttributeDefinition.class
 vn/crm/multitenant/config/HibernateConfig.class
@@ -21,12 +18,8 @@ vn/crm/multitenant/repository/ProductRepository.class
 vn/crm/multitenant/security/SecurityConfig.class
 vn/crm/multitenant/config/TenantIdentifierResolver.class
 vn/crm/multitenant/controller/QuoteController.class
-vn/crm/multitenant/repository/NotificationRuleRepository.class
-vn/crm/multitenant/entity/NotificationRule.class
 vn/crm/multitenant/controller/ProductController.class
-vn/crm/multitenant/controller/NotificationRuleController.class
 vn/crm/multitenant/repository/LeadRepository.class
-vn/crm/multitenant/entity/RuleExecutionLog.class
 vn/crm/multitenant/entity/Contact.class
 vn/crm/multitenant/controller/AttributeDefinitionController.class
 vn/crm/multitenant/service/FlywayMigrationService.class
@@ -51,4 +44,3 @@ vn/crm/multitenant/repository/ActivityRepository.class
 vn/crm/multitenant/repository/AttributeDefinitionRepository.class
 vn/crm/multitenant/repository/NoteRepository.class
 vn/crm/multitenant/entity/Ticket.class
-vn/crm/multitenant/validation/SqlFormulaValidator.class

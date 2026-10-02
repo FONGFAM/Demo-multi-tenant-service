@@ -13,27 +13,6 @@ CREATE TABLE IF NOT EXISTS attribute_definitions (
     is_required BOOLEAN DEFAULT false
 );
 
-CREATE TABLE IF NOT EXISTS notification_rules (
-    id UUID PRIMARY KEY,
-    owner_id UUID, created_by UUID, updated_by UUID,
-    created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(),
-    custom_properties JSONB DEFAULT '{}'::jsonb,
-    
-    target_table VARCHAR(50) NOT NULL,
-    rule_type VARCHAR(50) NOT NULL,
-    sql_formula TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS rule_execution_logs (
-    id UUID PRIMARY KEY,
-    owner_id UUID, created_by UUID, updated_by UUID,
-    created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(),
-    custom_properties JSONB DEFAULT '{}'::jsonb,
-    
-    rule_id UUID REFERENCES notification_rules(id),
-    status VARCHAR(50),
-    error_msg TEXT
-);
 
 -- 2. BẢNG NGHIỆP VỤ LÕI (9 Bảng chuẩn)
 
